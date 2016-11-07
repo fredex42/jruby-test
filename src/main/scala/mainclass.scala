@@ -1,13 +1,8 @@
 import org.jruby.embed.ScriptingContainer
-import java.io.FileReader
-import java.io.IOException
-
 import scala.io.Source
 
 object mainclass {
   def getFileContents(filename:String):Option[String] = {
-//    val in:FileReader = new FileReader(filename)
-//    IOUtils.getStringFromReader(in)
       val stream = Source.fromFile(filename)
       try
         Some(stream.mkString)
@@ -19,9 +14,11 @@ object mainclass {
 
   def doRun(container:ScriptingContainer,filecontent:String) = {
     try {
+      /* runScriptlet returns the exit code from the script, and runs synchronously */
       val r = container.runScriptlet(filecontent)
       println(s"\nrunScriptlet returned $r\n\n")
     } catch {
+      /*exceptions in ruby show as EvalFailedException, not RaiseException below*/
       case e:org.jruby.embed.EvalFailedException=>
         println(s"\nRuby exception occurred (eval failed): ${e.getMessage}")
         for (l <- e.getStackTrace) {
